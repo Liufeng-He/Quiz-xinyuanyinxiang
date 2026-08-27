@@ -766,84 +766,100 @@ body::before, .ambient { display: none; }
   .result-hero { border-radius: 12px; box-shadow: 6px 6px 0 var(--ink); }
 }
 
-/* Ranked, collision-aware word cloud. */
 .word-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px 14px;
+  padding: 24px 16px;
+  min-height: 200px;
   position: relative;
-  display: block;
-  width: 100%;
-  min-height: 0;
-  aspect-ratio: 2 / 1;
-  overflow: hidden;
-  padding: 0;
-  border: 1.5px solid #29253a;
-  background-color: #141126;
-  background-image:
-    radial-gradient(ellipse at 50% 55%, rgba(109,69,165,.58) 0, rgba(72,52,126,.26) 29%, rgba(20,17,38,0) 62%),
-    radial-gradient(ellipse at 58% 46%, rgba(41,125,117,.27) 0, rgba(20,17,38,0) 42%),
-    radial-gradient(circle at 14% 23%, rgba(168,226,218,.7) 0 1px, transparent 1.7px),
-    radial-gradient(circle at 76% 31%, rgba(255,241,188,.62) 0 1px, transparent 1.6px);
-  background-size: auto, auto, 53px 53px, 67px 67px;
-  box-shadow: inset 0 0 60px rgba(5,3,14,.52);
 }
-.word-cloud::before,
-.word-cloud::after {
-  content: "";
-  position: absolute;
-  border: 0;
-  pointer-events: none;
-}
-.word-cloud::before {
-  inset: 9% 21% 8%;
-  width: auto;
-  height: auto;
-  opacity: .62;
-  clip-path: polygon(50% 100%, 43% 91%, 30% 78%, 17% 64%, 7% 49%, 4% 34%, 9% 19%, 20% 8%, 34% 5%, 44% 11%, 50% 23%, 56% 11%, 66% 5%, 80% 8%, 91% 19%, 96% 34%, 93% 49%, 83% 64%, 70% 78%, 57% 91%);
-  background: radial-gradient(circle at 50% 44%, rgba(174,116,220,.72), rgba(77,48,131,.24) 58%, transparent 72%);
-  filter: blur(12px);
-}
-.word-cloud::after {
-  inset: 17% 29% 17%;
-  width: auto;
-  height: auto;
-  opacity: .42;
-  clip-path: polygon(50% 100%, 43% 91%, 30% 78%, 17% 64%, 7% 49%, 4% 34%, 9% 19%, 20% 8%, 34% 5%, 44% 11%, 50% 23%, 56% 11%, 66% 5%, 80% 8%, 91% 19%, 96% 34%, 93% 49%, 83% 64%, 70% 78%, 57% 91%);
-  background: radial-gradient(circle at 48% 45%, rgba(168,226,218,.65), rgba(168,226,218,0) 68%);
-  filter: blur(7px);
-}
-.word-cloud span {
-  position: absolute;
-  z-index: 1;
-  display: block;
-  margin: 0;
-  color: var(--word-color, var(--violet));
-  font-size: var(--cloud-size, 16px);
-  font-weight: 760;
-  line-height: 1;
+
+
+.word-cloud-item {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: default;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  opacity: 0;
+  transform: scale(0.6);
+  animation: cloudFadeIn 0.5s ease forwards;
+  line-height: 1.4;
   white-space: nowrap;
-  letter-spacing: -.04em;
-  text-shadow: 0 0 10px color-mix(in srgb, var(--word-color) 50%, transparent);
-  transform: translate(-50%, -50%);
-  transform-origin: center;
-}
-.word-cloud span[data-rank="high"] { font-weight: 950; letter-spacing: -.08em; }
-.word-cloud span[data-rank="medium"] { font-weight: 850; }
-.word-cloud span[data-depth="core"] { z-index: 4; filter: drop-shadow(0 0 8px rgba(255,241,188,.42)); }
-.word-cloud span[data-depth="near"] { z-index: 3; opacity: .96; }
-.word-cloud span[data-depth="mid"] { z-index: 2; opacity: .84; }
-.word-cloud span[data-depth="far"] { z-index: 1; opacity: .66; }
-.word-cloud .cloud-empty {
-  inset: 50% auto auto 50%;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 650;
-  transform: translate(-50%, -50%);
 }
 
-@media (max-width: 620px) {
-  .word-cloud { aspect-ratio: 1.35 / 1; }
-  .word-cloud span { font-size: max(12px, calc(var(--cloud-size, 16px) * .58)); }
+
+@keyframes cloudFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) rotate(5deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.05) rotate(-1deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
 }
 
+
+.word-cloud-item:hover {
+  transform: scale(1.25) !important;
+  z-index: 10;
+  background: rgba(139, 92, 246, 0.12);
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.2);
+}
+
+.word-cloud-item[data-level="1"] {
+  font-size: 12px;
+  color: #c4b5fd;
+}
+
+.word-cloud-item[data-level="2"] {
+  font-size: 16px;
+  color: #a78bfa;
+}
+
+.word-cloud-item[data-level="3"] {
+  font-size: 22px;
+  color: #8b5cf6;
+}
+
+.word-cloud-item[data-level="4"] {
+  font-size: 28px;
+  color: #7c3aed;
+}
+
+.word-cloud-item[data-level="5"] {
+  font-size: 36px;
+  color: #6d28d9;
+  font-weight: 800;
+}
+
+
+
+.word-cloud-title {
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text, #1e1b4b);
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+
+.word-cloud-subtitle {
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted, #6b7280);
+  margin-bottom: 16px;
+}
 /* Final interaction polish: consistent rhythm from landing to result. */
 .progress-meta { color: var(--ink); font-size: 11px; letter-spacing: .05em; }
 .question-card { padding-top: clamp(28px, 6vw, 48px); }
@@ -866,4 +882,157 @@ body::before, .ambient { display: none; }
   .question-card { min-height: 0; }
   .question-note { margin-bottom: 22px; }
   .result-card { margin-top: 13px; }
+}
+.suggestion-container {
+  margin-top: 18px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.suggestion-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.suggestion-tag {
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.suggestion-tag:hover {
+  background: var(--violet);
+  color: white;
+  border-color: var(--violet);
+  transform: translateY(-1px);
+}
+/* 词云项 */
+.word-cloud-item {
+  position: absolute;
+  white-space: nowrap;
+  font-weight: 600;
+  cursor: default;
+  user-select: none;
+  padding: 2px 4px;
+  border-radius: 4px;
+  /* 关键：将 transform 的 transition 移除，避免和 rotate 冲突 */
+  transition: color 0.2s ease;
+}
+
+/* 悬停效果 */
+.word-cloud-item:hover {
+  /* 关键：使用 !important 确保悬停放大能覆盖掉 rotate 旋转 */
+  transform: scale(1.25) !important;
+  z-index: 10;
+  background: rgba(139, 92, 246, 0.1);
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.15);
+}
+
+/* Heart nebula word cloud: frequency controls size, depth controls presence. */
+.word-cloud {
+  isolation: isolate;
+  position: relative;
+  display: block;
+  min-height: 390px;
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid #c7bdaa;
+  border-radius: 9px;
+  background:
+    radial-gradient(circle at 50% 43%, rgba(255,255,255,.98) 0 10%, rgba(248,239,242,.86) 32%, transparent 63%),
+    linear-gradient(145deg, #f5f0e8, #ece6df);
+  box-shadow: inset 0 0 0 5px rgba(255,255,255,.4);
+}
+
+.word-cloud::before {
+  content: "";
+  position: absolute;
+  z-index: -2;
+  inset: 7% 9% 6%;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 94C43 85 7 63 7 33C7 15 19 5 35 5C44 5 49 11 50 18C51 11 56 5 65 5C81 5 93 15 93 33C93 63 57 85 50 94Z' fill='black'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 94C43 85 7 63 7 33C7 15 19 5 35 5C44 5 49 11 50 18C51 11 56 5 65 5C81 5 93 15 93 33C93 63 57 85 50 94Z' fill='black'/%3E%3C/svg%3E") center / contain no-repeat;
+  background:
+    radial-gradient(circle at 32% 29%, rgba(178,81,114,.34), transparent 33%),
+    radial-gradient(circle at 69% 31%, rgba(78,59,130,.31), transparent 36%),
+    radial-gradient(circle at 51% 64%, rgba(47,117,111,.22), transparent 45%),
+    linear-gradient(160deg, rgba(255,250,250,.9), rgba(222,207,228,.66));
+  filter: drop-shadow(0 18px 28px rgba(78,59,130,.12));
+}
+
+.word-cloud::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 8%;
+  pointer-events: none;
+  opacity: .7;
+  background-image:
+    radial-gradient(circle at 16% 32%, #fff 0 1px, transparent 2px),
+    radial-gradient(circle at 73% 19%, rgba(78,59,130,.32) 0 1px, transparent 2px),
+    radial-gradient(circle at 84% 56%, #fff 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 28% 72%, rgba(178,81,114,.3) 0 1px, transparent 2px),
+    radial-gradient(circle at 57% 82%, #fff 0 1px, transparent 2px);
+  background-size: 91px 79px, 127px 113px, 143px 131px, 109px 97px, 157px 139px;
+}
+
+.word-cloud span.cloud-word {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 50%;
+  margin: 0;
+  padding: 2px 4px;
+  color: var(--word-color);
+  font-family: "Microsoft YaHei UI", "PingFang SC", sans-serif;
+  font-size: var(--cloud-size);
+  font-weight: 720;
+  line-height: 1;
+  letter-spacing: .015em;
+  white-space: nowrap;
+  cursor: default;
+  user-select: none;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(.9);
+  animation: nebulaWordIn .54s cubic-bezier(.2,.72,.24,1) var(--cloud-delay) forwards;
+  transition: color .2s ease, text-shadow .2s ease;
+}
+
+.word-cloud .cloud-word[data-depth="core"] { --cloud-opacity: 1; font-weight: 900; text-shadow: 0 3px 14px rgba(78,59,130,.18); }
+.word-cloud .cloud-word[data-depth="near"] { --cloud-opacity: .94; font-weight: 800; }
+.word-cloud .cloud-word[data-depth="mid"] { --cloud-opacity: .82; }
+.word-cloud .cloud-word[data-depth="far"] { --cloud-opacity: .64; letter-spacing: .04em; }
+.word-cloud .cloud-word[data-rank="high"] { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 5px; }
+.word-cloud .cloud-word:hover { z-index: 5; color: var(--ink); text-shadow: 0 5px 18px rgba(78,59,130,.22); transform: translate(-50%, -50%) scale(1.08); }
+
+.word-cloud .cloud-empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: 8px;
+  padding: 28px;
+  color: #6d617b;
+  text-align: center;
+}
+.word-cloud .cloud-empty span { color: #b25172; font-size: 52px; font-weight: 400; line-height: 1; }
+.word-cloud .cloud-empty strong { color: var(--ink); font-size: 17px; }
+.word-cloud .cloud-empty small { max-width: 260px; font-size: 11px; line-height: 1.7; }
+
+@keyframes nebulaWordIn {
+  from { opacity: 0; transform: translate(-50%, -44%) scale(.82); }
+  to { opacity: var(--cloud-opacity, 1); transform: translate(-50%, -50%) scale(1); }
+}
+
+@media (max-width: 620px) {
+  .word-cloud { min-height: 330px; }
+  .word-cloud::before { inset: 8% 3% 7%; }
+  .word-cloud .cloud-word { left: var(--cloud-mobile-left) !important; top: var(--cloud-mobile-top) !important; font-size: var(--cloud-mobile-size) !important; }
+  .word-cloud .cloud-word:nth-of-type(n+25) { display: none; }
 }

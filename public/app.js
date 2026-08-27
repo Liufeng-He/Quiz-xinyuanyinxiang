@@ -221,10 +221,45 @@ function renderExperimentReasons() {
 function renderKeywords() {
   const words = state.keywords ?? ["", "", ""];
   const consent = state.publicCloudConsent !== false;
+  const suggestions = ['情绪', '认知', '行为', '大脑', '神经', '发展', '社会', '人格', '意识'];
+  const suggestionHtml = suggestions.map(word => 
+    `<span class="suggestion-tag" onclick="fillKeyword('${word}')">${word}</span>`
+  ).join('');
+
   return questionFrame("Q8", "请用三个词描述：心理学主要在研究什么？", "自由填词，不提供词库。", `
-    <div class="word-grid">${words.map((word, i) => `<input class="text-input" data-word-index="${i}" maxlength="16" value="${escapeHtml(word)}" placeholder="第 ${i + 1} 个词">`).join("")}</div>
-    <label class="consent-row"><input type="checkbox" data-field="publicCloudConsent" ${consent ? "checked" : ""}><span>同意将三个词以匿名、归并后的形式计入公共词云。私人定制文字不会上传。</span></label>`);
+    <div class="word-grid">
+      ${words.map((word, i) => `
+        <input class="text-input" data-word-index="${i}" maxlength="16" value="${escapeHtml(word)}" placeholder="第 ${i + 1} 个词">
+      `).join("")}
+    </div>
+    <div class="suggestion-container">
+      <span>灵感提示：</span>
+      <div class="suggestion-tags">
+        ${suggestionHtml}
+      </div>
+    </div>
+    <label class="consent-row">
+      <input type="checkbox" data-field="publicCloudConsent" ${consent ? "checked" : ""}>
+      <span>同意将三个词以匿名、归并后的形式计入公共词云。私人定制文字不会上传。</span>
+    </label>
+  `);
 }
+window.fillKeyword = function(word) {
+  const inputs = document.querySelectorAll('.word-grid .text-input');
+  
+  for (const input of inputs) {
+    if (input.value.trim() === '') {
+      input.value = word;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      return;
+    }
+  }
+  const lastInput = inputs[inputs.length - 1];
+  if (lastInput) {
+    lastInput.value = word;
+    lastInput.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+};
 
 function renderPrivate() {
   return questionFrame("Q9", "最后，你最想对心院说的一句心里话是？", "可选填。想说什么就写什么。", `
@@ -408,42 +443,54 @@ async function submitKeywords() {
   }
 }
 
-function layoutCloud(words) {
-  const width = 680;
-  const height = 340;
+function layoutCloud(words, { width = 680, height = 390, mobile = false } = {}) {
   const max = Math.max(...words.map((word) => word.count));
-  const colors = ["#FFF1BC", "#A8E2DA", "#D9C5FF", "#F2A99B", "#B8CDE8"];
-  const heartPoint = (angle, scale, depth) => {
-    const heartX = 16 * Math.sin(angle) ** 3;
-    const heartY = 13 * Math.cos(angle) - 5 * Math.cos(2 * angle) - 2 * Math.cos(3 * angle) - Math.cos(4 * angle);
-    return { x: width / 2 + heartX * 15.6 * scale, y: 158 - heartY * 7.25 * scale, depth };
-  };
-  const candidates = [
-    { x: width / 2, y: 170, depth: "core" },
-    ...Array.from({ length: 8 }, (_, index) => heartPoint(-.12 + Math.PI * 2 * index / 8, .38, "near")),
-    ...Array.from({ length: 14 }, (_, index) => heartPoint(.08 + Math.PI * 2 * index / 14, .66, "mid")),
-    ...Array.from({ length: 24 }, (_, index) => heartPoint(-.04 + Math.PI * 2 * index / 24, .94, "far"))
-  ];
-  const placed = [];
+  const min = Math.min(...words.map((word) => word.count));
 
-  const items = words.slice(0, 36).map((word, index) => {
-    const ratio = Math.sqrt(word.count / max);
+  const palette = ["#4e3b82", "#7657a8", "#b25172", "#2f756f", "#9a653f"];
+  const candidates = [];
+  const gridStep = mobile ? 6 : 10;
+  const edgeX = mobile ? 18 : 40;
+  for (let y = mobile ? 32 : 44; y <= height - (mobile ? 18 : 24); y += gridStep) {
+    for (let x = edgeX; x <= width - edgeX; x += gridStep) {
+      const hx = (x / width - .5) / .43;
+      const hy = -(y / height - .49) / .43;
+      const equation = (hx * hx + hy * hy - 1) ** 3 - hx * hx * hy ** 3;
+      if (equation <= 0) {
+        const radius = Math.hypot(hx * .9, hy);
+        candidates.push({ x, y, radius, depth: radius < .32 ? "core" : radius < .62 ? "near" : radius < .86 ? "mid" : "far" });
+      }
+    }
+  }
+  candidates.sort((a, b) => a.radius - b.radius || Math.abs(a.y - height * .46) - Math.abs(b.y - height * .46));
+
+  const placed = [];
+  const items = words.slice(0, mobile ? 24 : 40).map((word, index) => {
+    const ratio = max === min ? .56 : Math.sqrt((word.count - min + 1) / (max - min + 1));
     const length = Math.max(1, [...word.canonical].length);
-    const baseSize = Math.round(14 + ratio * 32);
-    const fontSize = Math.max(13, Math.min(baseSize, 190 / (length * .94)));
-    const itemWidth = Math.max(fontSize * 1.4, length * fontSize * 1.06);
-    return { ...word, index, fontSize, itemWidth, itemHeight: fontSize * 1.18, color: colors[index % colors.length] };
+    const baseSize = Math.round((mobile ? 9 : 12) + ratio * (mobile ? 16 : 27));
+    const fontSize = Math.max(mobile ? 9 : 12, Math.min(baseSize, (mobile ? 104 : 172) / (length * 1.02)));
+    const itemWidth = Math.max(fontSize * 1.25, length * fontSize * 1.02);
+
+    return {
+      ...word,
+      index,
+      fontSize,
+      itemWidth,
+      itemHeight: fontSize * 1.14,
+      color: palette[index % palette.length]
+    };
   });
 
   items.forEach((item) => {
     const position = candidates.find((candidate) => {
-      const box = {
-        left: candidate.x - item.itemWidth / 2 - 15,
-        right: candidate.x + item.itemWidth / 2 + 15,
-        top: candidate.y - item.itemHeight / 2 - 10,
-        bottom: candidate.y + item.itemHeight / 2 + 10
-      };
-      const inside = box.left > 10 && box.right < width - 10 && box.top > 10 && box.bottom < height - 10;
+      const gapX = mobile ? 4 : (item.fontSize > 26 ? 11 : 7);
+      const gapY = mobile ? 3 : (item.fontSize > 26 ? 7 : 4);
+      const box = { left: candidate.x - item.itemWidth / 2 - gapX, right: candidate.x + item.itemWidth / 2 + gapX, top: candidate.y - item.itemHeight / 2 - gapY, bottom: candidate.y + item.itemHeight / 2 + gapY };
+      const safeX = mobile ? 10 : 22;
+      const safeTop = mobile ? 16 : 24;
+      const safeBottom = mobile ? 10 : 18;
+      const inside = box.left > safeX && box.right < width - safeX && box.top > safeTop && box.bottom < height - safeBottom;
       const overlaps = placed.some((other) => !(box.right < other.left || box.left > other.right || box.bottom < other.top || box.top > other.bottom));
       if (inside && !overlaps) {
         Object.assign(item, { left: candidate.x / width * 100, top: candidate.y / height * 100, depth: candidate.depth, box });
@@ -453,6 +500,7 @@ function layoutCloud(words) {
     });
     if (position) placed.push(item.box);
   });
+
   return items.filter((item) => item.depth);
 }
 
@@ -472,14 +520,17 @@ async function loadCloud() {
     words = Object.entries(local).map(([canonical, count]) => ({ canonical, count })).sort((a, b) => b.count - a.count);
   }
   if (!words.length) {
-    cloud.innerHTML = `<span class="cloud-empty">词云还在等第一批答案。</span>`;
-    meta.textContent = "只展示匿名归并后的词频。";
+    cloud.innerHTML = `<div class="cloud-empty"><span>♡</span><strong>心形正在等待词语</strong><small>收集到回答后，会按频率自动长成一片星云。</small></div>`;
+    meta.textContent = "还没有可展示的匿名词频。";
     return;
   }
   const layout = layoutCloud(words);
+  const mobileLayout = new Map(layoutCloud(words, { width: 340, height: 330, mobile: true }).map((word) => [word.canonical, word]));
   cloud.innerHTML = layout.map((word, index) => {
     const rank = index < 3 ? "high" : index < 10 ? "medium" : "normal";
-    return `<span data-rank="${rank}" data-depth="${word.depth}" title="${word.count} 次" style="left:${word.left.toFixed(2)}%;top:${word.top.toFixed(2)}%;--cloud-size:${word.fontSize}px;--word-color:${word.color}">${escapeHtml(word.canonical)}</span>`;
+    const mobileWord = mobileLayout.get(word.canonical);
+    const mobileStyle = mobileWord ? `--cloud-mobile-left:${mobileWord.left.toFixed(2)}%;--cloud-mobile-top:${mobileWord.top.toFixed(2)}%;--cloud-mobile-size:${mobileWord.fontSize}px;` : "";
+    return `<span class="cloud-word" data-rank="${rank}" data-depth="${word.depth}" title="${word.count} 次" style="left:${word.left.toFixed(2)}%;top:${word.top.toFixed(2)}%;--cloud-size:${word.fontSize}px;${mobileStyle}--word-color:${word.color};--cloud-delay:${Math.min(index * 24, 520)}ms">${escapeHtml(word.canonical)}</span>`;
   }).join("");
   meta.textContent = total ? `已汇总 ${total} 份匿名回答；相近词按规则归并。` : "本机离线词频；启动服务后将使用公共聚合接口。";
 }

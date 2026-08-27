@@ -22,19 +22,15 @@ const MIME = {
 const GROUPS = new Map();
 for (const [canonical, variants] of Object.entries({
   "情绪": ["情绪", "情感", "心情"],
-  "大脑与神经": ["大脑", "脑", "脑科学", "神经", "神经科学"],
-  "人际关系": ["人际", "人际关系", "社交", "关系"],
-  "行为": ["行为", "行动", "人的行为"],
-  "发展": ["发展", "成长", "心理发展"],
   "认知": ["认知", "思维", "思考", "心智"],
-  "心理健康": ["心理健康", "心理问题", "精神健康"],
-  "自我": ["自我", "自己", "自我认识", "自我认知"],
+  "行为": ["行为", "行动", "人的行为"],
+  "人际关系": ["人际", "人际关系", "社交", "关系"],
+  "发展": ["发展", "成长", "心理发展"],
+  "脑科学": ["大脑", "脑", "脑科学", "神经", "神经科学"],
   "学习": ["学习", "学习过程"],
-  "压力": ["压力", "应激"],
   "幸福感": ["幸福", "幸福感", "福祉"],
-  "人类": ["人", "人类", "人性"],
-  "心理": ["心", "心理", "内心"],
-  "梦境": ["梦", "梦境"]
+  "压力": ["压力", "应激"],
+  "梦": ["梦", "梦境"]
 })) {
   for (const variant of variants) GROUPS.set(variant, canonical);
 }
@@ -107,24 +103,31 @@ export function createAppServer({ dataFile = DEFAULT_DATA_FILE } = {}) {
 
       if (req.method === "POST" && url.pathname === "/api/v1/psychology-keywords") {
         const body = await readJson(req);
-        const words = Array.isArray(body.words) ? body.words.slice(0, 3) : [];
-        const normalized = words.map(normalizeKeyword).filter(Boolean);
-        if (normalized.length !== 3) {
-          return json(res, 400, { error: "请提交三个有效关键词" });
+        const rawWords = Array.isArray(body.words) ? body.words : [];
+        const normalized = rawWords.map(w => normalizeKeyword(w)).filter(Boolean);
+
+        if (normalized.length === 0) {
+          return json(res, 400, { error: "请至少填写一个关键词" });
         }
+
+        const wordsToSave = normalized.slice(0, 3);
+
         if (body.publicCloudConsent === false) {
-          return json(res, 200, { accepted: false, normalized, reason: "consent_declined" });
+          return json(res, 200, { accepted: false, normalized: wordsToSave, reason: "consent_declined" });
         }
+
         const store = await loadStore(dataFile);
         store.totalResponses += 1;
-        for (const word of normalized) {
+
+        for (const word of wordsToSave) {
           const item = store.words[word.canonical] ?? { count: 0, variants: {} };
           item.count += 1;
           item.variants[word.original] = (item.variants[word.original] ?? 0) + 1;
           store.words[word.canonical] = item;
         }
+
         await saveStore(dataFile, store);
-        return json(res, 200, { accepted: true, normalized, totalResponses: store.totalResponses });
+        return json(res, 200, { accepted: true, normalized: wordsToSave, totalResponses: store.totalResponses });
       }
 
       if (req.method === "GET" && url.pathname === "/api/v1/psychology-keywords/cloud") {

@@ -7,7 +7,7 @@ import { createAppServer, normalizeKeyword } from "../server.mjs";
 import { ARCHETYPES, calculateResult } from "../public/scoring.js";
 
 assert.deepEqual(normalizeKeyword(" 心情。 "), { original: "心情", canonical: "情绪" });
-assert.deepEqual(normalizeKeyword("脑科学"), { original: "脑科学", canonical: "大脑与神经" });
+assert.deepEqual(normalizeKeyword("脑科学"), { original: "脑科学", canonical: "脑科学" });
 
 const base = {
   courseTaken: "yes",
@@ -61,13 +61,13 @@ try {
   assert.equal(post.status, 200);
   const accepted = await post.json();
   assert.equal(accepted.accepted, true);
-  assert.deepEqual(accepted.normalized.map((item) => item.canonical), ["情绪", "大脑与神经", "人际关系"]);
+  assert.deepEqual(accepted.normalized.map((item) => item.canonical), ["情绪", "脑科学", "人际关系"]);
 
   const cloud = await fetch(`${baseUrl}/api/v1/psychology-keywords/cloud?minCount=1`);
   assert.equal(cloud.status, 200);
   const payload = await cloud.json();
   assert.equal(payload.totalResponses, 1);
-  assert.deepEqual(payload.words.map((item) => item.canonical).sort(), ["人际关系", "大脑与神经", "情绪"].sort());
+  assert.deepEqual(payload.words.map((item) => item.canonical).sort(), ["人际关系", "脑科学", "情绪"].sort());
 } finally {
   await new Promise((resolve) => server.close(resolve));
   await rm(temp, { recursive: true, force: true });
