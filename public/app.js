@@ -9,7 +9,7 @@ const validation = $("#validationMessage");
 const state = {};
 let currentId = "basic";
 let history = [];
-let submittedKeywords = false;
+let submittedResponse = false;
 
 // Source: 北京大学官网“学部与院系”（按官网分组，2026-08 核对）。
 const PKU_DEPARTMENTS = [
@@ -265,7 +265,7 @@ function renderPrivate() {
   return questionFrame("Q9", "最后，你最想对心院说的一句心里话是？", "可选填。想说什么就写什么。", `
     <label class="field-label" for="privateText">写下一句话 <span class="counter">可跳过</span></label>
     <textarea id="privateText" class="text-area heart-textarea" data-field="privateText" maxlength="180" placeholder="想说什么就写什么，不必深刻，也不用押韵。">${escapeHtml(state.privateText)}</textarea>
-    <p class="private-note"><span>♥</span> 这句话只用于生成你的私人回信，不进入公共词云。</p>`);
+    <p class="private-note"><span>♥</span> 这句话会匿名收集，供心院后续汇总；不进入公共词云，也不影响人格结果。</p>`);
 }
 
 const renderers = {
@@ -425,15 +425,16 @@ function portraitSvg(type, code) {
   </svg>`;
 }
 
-async function submitKeywords() {
-  if (submittedKeywords) return;
-  submittedKeywords = true;
+async function submitResponse() {
+  if (submittedResponse) return;
+  submittedResponse = true;
   try {
-    await fetch("/api/v1/psychology-keywords", {
+    const response = await fetch("/api/v1/responses", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ words: state.keywords, publicCloudConsent: state.publicCloudConsent !== false })
+      body: JSON.stringify({ answers: state })
     });
+    if (!response.ok) throw new Error("response_not_saved");
   } catch {
     const local = JSON.parse(localStorage.getItem("xinyuan-keywords") || "{}");
     if (state.publicCloudConsent !== false) {
@@ -597,7 +598,7 @@ function renderResult(result) {
     for (const key of Object.keys(state)) delete state[key];
     history = [];
     currentId = "basic";
-    submittedKeywords = false;
+    submittedResponse = false;
     show("landing");
   });
 }
@@ -607,7 +608,7 @@ async function finish() {
   const captions = ["先计算好感度与存在感……", "再把关注朝向放进画像……", "最后看看你们有没有 CP 感……"];
   let index = 0;
   const ticker = setInterval(() => { $("#loadingCaption").textContent = captions[Math.min(++index, captions.length - 1)]; }, 380);
-  await submitKeywords();
+  await submitResponse();
   await new Promise((resolve) => setTimeout(resolve, 1050));
   clearInterval(ticker);
   const result = calculateResult(state);
