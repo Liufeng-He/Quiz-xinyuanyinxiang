@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#5b4b8a">
+  <meta name="description" content="你心中的心院，是什么样的人？完成问卷，获得心院拟人画像与 CP 感。">
+  <title>你心中的心院，是什么样的？</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="ambient ambient-one" aria-hidden="true"></div>
+  <div class="ambient ambient-two" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="心院人格首页">
+      <svg viewBox="0 0 48 48" aria-hidden="true">
+        <path d="M24 42C13 35 6 29 6 19.8 6 12.7 11.2 8 17.2 8c3.8 0 6.1 1.8 6.8 4.1C24.7 9.8 27 8 30.8 8 36.8 8 42 12.7 42 19.8 42 29 35 35 24 42Z" fill="currentColor" opacity=".18"/>
+        <path d="M15 26.5c4.4-1.8 6.3-5.1 5.8-10 5.1 2.4 7.2 6.1 6.2 11.1 2.5-2 4.8-2.4 7-1.4-2.7 5.9-7.1 8.8-13.2 8.6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+      </svg>
+      <span>心院人格</span>
+    </a>
+    <span class="topbar-note">不是诊断，是一次认真又好玩的相遇</span>
+  </header>
+
+  <main id="app" class="app-shell" aria-live="polite">
+    <section id="landing" class="screen landing-screen">
+      <div class="hero-art" aria-hidden="true">
+        <div class="persona-stack">
+          <span class="hero-persona-card card-left"><img src="/personas/AVC.webp" alt=""></span>
+          <span class="hero-persona-card card-main"><img src="/personas/AVE.webp" alt=""></span>
+          <span class="hero-persona-card card-right"><img src="/personas/WLE.webp" alt=""></span>
+        </div>
+        <svg class="landing-character" viewBox="0 0 520 410" role="presentation">
+          <ellipse cx="254" cy="203" rx="210" ry="157" fill="none" stroke="#29253a" stroke-width="3" opacity=".22" transform="rotate(-8 254 203)"/>
+          <ellipse cx="254" cy="203" rx="180" ry="178" fill="none" stroke="#29253a" stroke-width="3" opacity=".16" transform="rotate(14 254 203)"/>
+          <path d="M105 363L132 286L205 252L262 278L319 252L390 286L420 363Z" fill="#E5B85E" stroke="#29253A" stroke-width="8" stroke-linejoin="miter"/>
+          <path d="M206 253L262 300L319 253L331 284L262 331L193 284Z" fill="#FFF9EA" stroke="#29253A" stroke-width="7"/>
+          <path d="M231 230H290V274L261 296L231 274Z" fill="#F2CBB1" stroke="#29253A" stroke-width="7"/>
+          <path d="M173 85L213 48L295 44L344 84L352 161L335 219L294 253L230 253L184 219L164 157Z" fill="#F3CEB3" stroke="#29253A" stroke-width="9" stroke-linejoin="round"/>
+          <path d="M164 147L173 80L214 46L298 42L340 73L355 133L312 118L286 75L264 116L219 141Z" fill="#6B58A0" stroke="#29253A" stroke-width="9" stroke-linejoin="miter"/>
+          <path d="M195 158L219 147L242 157M279 157L301 147L326 158" fill="none" stroke="#29253A" stroke-width="7"/>
+          <path d="M221 173H235V188H221ZM290 173H304V188H290Z" fill="#29253A"/>
+          <path d="M267 178L257 201H274M241 214L262 226L286 211" fill="none" stroke="#84485A" stroke-width="6" stroke-linejoin="miter"/>
+          <g transform="translate(323 167) rotate(-18)">
+            <circle cx="47" cy="37" r="35" fill="#DDEFEA" stroke="#29253A" stroke-width="7"/>
+            <circle cx="47" cy="37" r="18" fill="none" stroke="#3F9188" stroke-width="5"/>
+            <path d="M71 63L103 99" stroke="#29253A" stroke-width="12"/>
+          </g>
+          <g transform="translate(48 112) rotate(-9)"><rect width="58" height="62" rx="4" fill="#FFFDF8" stroke="#29253A" stroke-width="5"/><text x="29" y="41" text-anchor="middle" fill="#5B4B8A" font-size="28" font-weight="900">?</text></g>
+          <g transform="translate(409 76) rotate(8)"><rect width="58" height="62" rx="4" fill="#FBE6DD" stroke="#29253A" stroke-width="5"/><path d="M29 14L34 27L47 32L34 37L29 50L24 37L11 32L24 27Z" fill="#C45F4F"/></g>
+          <g transform="translate(50 300) rotate(7)"><rect width="64" height="58" rx="4" fill="#E3F1ED" stroke="#29253A" stroke-width="5"/><text x="32" y="39" text-anchor="middle" fill="#287D75" font-size="25" font-weight="900">Σ</text></g>
+          <path d="M398 60H418V80H398ZM80 66L93 87L67 87Z" fill="#3F9188" stroke="#29253A" stroke-width="4"/>
+        </svg>
+      </div>
+      <p class="eyebrow">XINYUAN PERSONA · 8 TYPES</p>
+      <h1>你心中的心院，<br><em>是什么样的？</em></h1>
+      <p class="hero-copy">跟着直觉完成一组轻松的问题，看看你眼中的心院是哪一种拟人形象，以及你们的 CP 感有多强。</p>
+      <div class="feature-row" aria-label="测试特点">
+        <span><b>约 4 分钟</b><small>手机友好</small></span>
+        <span><b>8 种画像</b><small>可解释结果</small></span>
+        <span><b>匿名词云</b><small>不上传私语</small></span>
+      </div>
+      <button id="startBtn" class="primary-btn hero-btn">开始认识心院 <span>→</span></button>
+      <p class="privacy-tip">结果描述的是“你眼中的心院”，不对你进行人格或心理诊断。</p>
+    </section>
+
+    <section id="quiz" class="screen quiz-screen" hidden>
+      <div class="progress-wrap" aria-label="答题进度">
+        <div class="progress-meta"><span id="sectionLabel">基本信息</span><span id="progressText">1 / 16</span></div>
+        <div class="progress-track"><span id="progressBar"></span></div>
+      </div>
+      <article class="question-card">
+        <div id="questionMount"></div>
+        <p id="validationMessage" class="validation" role="alert"></p>
+      </article>
+      <nav class="quiz-nav" aria-label="问卷导航">
+        <button id="backBtn" class="ghost-btn">← 上一题</button>
+        <button id="nextBtn" class="primary-btn">下一题 <span>→</span></button>
+      </nav>
+    </section>
+
+    <section id="loading" class="screen loading-screen" hidden>
+      <div class="loader-orbit"><span></span><span></span><span></span></div>
+      <p class="eyebrow">正在拼合你的答案</p>
+      <h2>心院的轮廓<br>正在慢慢显影</h2>
+      <div class="loading-lines"><i></i><i></i><i></i></div>
+      <p id="loadingCaption">先计算好感度与存在感……</p>
+    </section>
+
+    <section id="result" class="screen result-screen" hidden>
+      <div id="resultMount"></div>
+    </section>
+  </main>
+
+  <template id="resultTemplate">
+    <article class="result-hero">
+      <div class="result-kicker"><span id="resultCode"></span><span id="confidenceBadge"></span></div>
+      <div id="portraitMount" class="portrait-mount"></div>
+      <p class="result-overline">你眼中的心院是</p>
+      <h1 id="resultName"></h1>
+      <p id="resultTagline" class="result-tagline"></p>
+      <div id="shortCode" class="short-code"></div>
+    </article>
+    <article class="result-card objective-card">
+      <p class="card-eyebrow">OBJECTIVE PROFILE</p>
+      <h2>三条主维度</h2>
+      <p id="resultSummary" class="card-lead"></p>
+      <div id="axisMount" class="axis-list"></div>
+      <div class="evidence-row">
+        <span id="basisTag"></span><span id="misconceptionTag"></span><span id="experimentTag"></span>
+      </div>
+    </article>
+    <article class="result-card cp-card">
+      <div class="cp-score"><span id="cpNumber"></span><small>/ 100</small></div>
+      <div>
+        <p class="card-eyebrow">XINYUAN × YOU</p>
+        <h2 id="cpTitle"></h2>
+        <p id="cpText"></p>
+      </div>
+      <div id="innerTags" class="inner-tags"></div>
+    </article>
+    <article id="privateCard" class="result-card private-card" hidden>
+      <p class="card-eyebrow">ONLY FOR YOU</p>
+      <h2>心院给你的私人回信</h2>
+      <blockquote id="privateReply"></blockquote>
+      <p>这段文字不会进入公共词云，分享结果时默认隐藏。</p>
+    </article>
+    <article class="result-card advice-card">
+      <p class="card-eyebrow">ONE MORE THING</p>
+      <h2>你留给心院的话</h2>
+      <p id="resultAdvice"></p>
+    </article>
+    <article class="result-card cloud-card">
+      <div class="cloud-head">
+        <div><p class="card-eyebrow">COLLECTIVE VIEW</p><h2>大家眼中的心理学</h2></div>
+        <button id="toggleCloud" class="mini-btn" aria-expanded="false">展开词云</button>
+      </div>
+      <div id="cloudPanel" hidden>
+        <p id="cloudMeta" class="cloud-meta"></p>
+        <div id="wordCloud" class="word-cloud"></div>
+      </div>
+    </article>
+    <div class="result-actions">
+      <button id="copyResult" class="primary-btn">复制结果文案</button>
+      <button id="printResult" class="ghost-btn">保存 / 打印</button>
+      <button id="restartQuiz" class="text-btn">重新测试</button>
+    </div>
+  </template>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
