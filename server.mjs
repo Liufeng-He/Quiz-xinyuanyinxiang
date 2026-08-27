@@ -166,7 +166,7 @@ export function createAppServer({ dataFile = DEFAULT_DATA_FILE } = {}) {
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const port = Number(process.env.PORT) || 4173;
   const server = createAppServer();
-  server.listen(port, "127.0.0.1", () => {
+  server.listen(port, "0.0.0.0", () => {
     console.log(`心院人格 H5 已启动：http://127.0.0.1:${port}`);
   });
 }
